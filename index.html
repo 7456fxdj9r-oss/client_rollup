@@ -1,80 +1,580 @@
+
+
+<!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Wellness Journey Check-In</title> <style> *{margin:0;padding:0;box-sizing:border-box} body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;min-he
+
+pasted
+
+1:42 PM
+This is a nicely built multi-step wellness check-in form, Craig. What would you like me to do with it? A few possibilities:
+
+Deploy/host it — set it up as a live page
+Modify the design or questions — adjust colors, layout, add/remove sections
+Set up the Google Apps Script backend — create the Apps Script to receive submissions into a Google Sheet
+Convert it to a React artifact so you can preview it interactively here
+Something else entirely
+What are you looking to do?
+
+Complete Brand Guide - 28-Day Metabolic Reset
+DOC
+
+Also check the code because when I started typing in the name, it would only take the first letter I also want you to verify the GitHub to look to make sure everything is working good there and then give me a step-by-step instructions or better yet go into my Google Drive and create the file structure that I need for me
+
+2:01 PM
+Let me start by reading the code carefully and checking your GitHub, then I'll review the brand guide to restyle the form.
+
+
+Tabs Context
+
+I can see you're editing the file on GitHub. Let me first look at the current state of the repo, then check your Google Drive for any related project structure.
+
+
+Used Claude in Chrome integration
+
+
+The repo has an empty index.html with placeholder text. Let me check if there are any other files in the repo, and also check if GitHub Pages is enabled.
+
+
+Used Claude in Chrome integration
+
+
+It's still on the edit page. Let me click "Cancel changes" to go back to the repo root.
+
+
+Used Claude in Chrome integration, used a tool
+
+
+Good. Here's what I can see:
+
+Repo client_rollup — Public, has just index.html (currently with placeholder "Enter file contents here")
+GitHub Pages is deployed (green checkmark, 17 minutes ago) — so this is already live
+Only 1 commit, no README
+Now let me look at what's currently deployed and also identify the input bug you mentioned. The issue in the code is clear — the render() function completely re-renders the DOM on every keystroke (oninput="setVal('${key}',this.value)"), which resets the cursor and loses focus. That's why only the first letter works.
+
+Let me now fix the code, restyle it to your Midnight Gold Elite brand, and then build everything. First, let me create the fixed and restyled HTML file:
+
+
+Check frontend design skill for best practices
+Now let me build the fixed and restyled version. The key issues to fix:
+
+Input bug: render() re-renders the entire DOM on every keystroke, killing focus. I need to use targeted DOM updates instead of full re-renders for input changes.
+Restyle to Midnight Gold Elite brand from the brand guide.
+Let me create the complete fixed file:
+
+
+Created 2 files, ran a command
+Good. Now let me also create the Google Apps Script backend file so you have everything ready:
+
+
+Creating the Google Apps Script code that receives form submissions and writes to Google Sheets
+Now let me paste the fixed code into the GitHub repo. Let me navigate to edit the file:
+
+
+Used Claude in Chrome integration
+
+
+I can see the old orange-themed code is already in the file. I need to select all and replace with the new code. Let me do that:
+
+
+Used Claude in Chrome integration
+
+
+Now I need to read the file content and paste it. Let me use JavaScript to set the editor content:
+
+
+Check file size
+The file is 698 lines. GitHub's editor uses CodeMirror. Let me try using the clipboard API approach - I'll read the file, copy to clipboard via JS, and paste:
+
+
+Ran 2 commands
+Now let me use JavaScript to set the content in the GitHub editor:
+
+
+Javascript tool
+
+Claude's response was interrupted
+Give me the html and I can copy paste is easily
+
+2:09 PM
+You're right, that's way easier. Here's the fixed and restyled file:
+
+
+Ran 2 commands, read a file
+Here are your two files:
+
+index.html — Paste this into your GitHub repo. Key changes:
+
+Input bug fixed: Created setInputVal() that updates data without re-rendering the DOM, so typing works normally now
+Restyled to Midnight Gold Elite: Dark navy background, gold accents, glassmorphism cards, Montserrat + Open Sans fonts, dot pattern overlay, gold glow animations, 48px min touch targets, rounded-full buttons per your brand guide
+Code.gs — Google Apps Script backend. To set it up:
+
+Go to script.google.com → New project
+Paste the Code.gs contents
+Deploy → New deployment → Web app → Execute as: Me, Access: Anyone
+Copy the URL and paste it into the GOOGLE_SCRIPT_URL variable in index.html before committing to GitHub
+Your GitHub Pages is already enabled and deploying from main, so once you paste the new index.html and commit, it'll be live automatically.
+
+Index
+Code · HTML 
+Code
+GS 
+
+
+
+
+Claude is AI and can make mistakes. Please double-check responses.
+Index · HTML
+Copy
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Wellness Journey Check-In</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;min-height:100vh;background:linear-gradient(180deg,#f97316 0%,#ea580c 100%)}
-  .progress-bar{position:sticky;top:0;z-index:10;background:rgba(234,88,12,.95);backdrop-filter:blur(8px);padding:12px 20px}
-  .progress-inner{max-width:600px;margin:0 auto;display:flex;align-items:center;gap:12px}
-  .progress-track{flex:1;height:6px;background:rgba(255,255,255,.2);border-radius:99px;overflow:hidden}
-  .progress-fill{height:100%;background:#fff;border-radius:99px;transition:width .4s ease}
-  .progress-text{color:rgba(255,255,255,.8);font-size:12px;font-weight:600;min-width:60px;text-align:right}
-  .header{text-align:center;padding:32px 20px 0}
-  .header h1{font-size:28px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:2px;text-shadow:0 2px 12px rgba(0,0,0,.15)}
-  .header p{font-size:20px;color:rgba(255,255,255,.85);margin-top:4px;font-weight:300}
-  .card-wrap{max-width:600px;margin:20px auto 40px;padding:0 16px}
-  .card{background:#fefce8;border-radius:16px;padding:32px 28px;box-shadow:0 20px 60px rgba(0,0,0,.1)}
-  .tabs{display:flex;gap:4px;margin-bottom:24px;flex-wrap:wrap}
-  .tab{padding:4px 10px;border-radius:6px;border:none;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s}
-  .tab.active{background:#f59e0b;color:#fff}
-  .tab.done{background:#fef3c7;color:#92400e}
-  .tab.future{background:transparent;color:#d1d5db;cursor:default}
-  h2.section-title{font-size:18px;font-weight:700;color:#1e293b;margin-bottom:4px}
-  p.section-sub{color:#78716c;font-size:13px;margin-bottom:20px}
-  .field{margin-bottom:24px}
-  .field-label{display:block;font-weight:600;font-size:14px;color:#1e293b;margin-bottom:8px}
-  .field-hint{font-size:12px;color:#94a3b8;margin:-4px 0 8px}
-  input[type=text],input[type=email],input[type=tel],select,textarea{width:100%;padding:10px 14px;border:1.5px solid #e5e5e5;border-radius:8px;font-size:14px;outline:none;background:#fafaf9;font-family:inherit;transition:border .15s}
-  input:focus,select:focus,textarea:focus{border-color:#f59e0b}
-  textarea{resize:vertical;min-height:72px}
-  select{cursor:pointer;color:#1e293b;appearance:auto}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-  @media(max-width:480px){.grid2,.grid3{grid-template-columns:1fr}}
-  .opt{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;border:1.5px solid #e5e5e5;cursor:pointer;transition:all .15s;font-size:14px;background:#fafaf9;user-select:none}
-  .opt:hover{background:#fffbeb}
-  .opt.selected{background:#fef3c7;border-color:#f59e0b}
-  .opt .indicator{width:20px;height:20px;border-radius:4px;border:2px solid #d1d5db;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
-  .opt.selected .indicator{border-color:#f59e0b;background:#f59e0b}
-  .opt .indicator.radio{border-radius:50%}
-  .opt.selected .indicator.radio{background:#fff;border-color:#f59e0b}
-  .opt.selected .indicator.radio::after{content:'';width:10px;height:10px;border-radius:50%;background:#f59e0b}
-  .check-mark{color:#fff;font-size:13px;font-weight:700}
-  .stars{display:flex;align-items:center;gap:4px}
-  .stars span{font-size:12px;color:#9ca3af;min-width:50px}
-  .stars span:last-child{text-align:right}
-  .star{background:none;border:none;cursor:pointer;font-size:28px;padding:0 2px;transition:color .15s}
-  .star.filled{color:#f59e0b}
-  .star.empty{color:#d1d5db}
-  .nav{display:flex;justify-content:space-between;margin-top:28px;padding-top:20px;border-top:1px solid #f5f0e1}
-  .btn{padding:10px 24px;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:14px;transition:all .15s}
-  .btn-back{background:#f5f5f4;color:#78716c}
-  .btn-next{background:#f59e0b;color:#fff;box-shadow:0 2px 8px rgba(245,158,11,.3)}
-  .btn-submit{background:#16a34a;color:#fff;padding:12px 32px;font-size:15px;font-weight:700;box-shadow:0 2px 8px rgba(22,163,74,.3)}
-  .btn:hover{opacity:.9;transform:translateY(-1px)}
-  .thank-you{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
-  .thank-card{background:#fefce8;border-radius:16px;padding:48px 36px;max-width:540px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.15)}
-  .thank-card h1{font-size:24px;font-weight:700;color:#1e293b;margin:0 0 12px}
-  .thank-card p{color:#475569;font-size:15px;line-height:1.7;margin:0 0 16px}
-  .spinner{display:inline-block;width:20px;height:20px;border:3px solid rgba(255,255,255,.3);border-radius:50%;border-top-color:#fff;animation:spin .8s linear infinite}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .error-msg{background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:12px 16px;border-radius:8px;font-size:13px;margin-bottom:16px}
-  .welcome-center{text-align:center;margin-bottom:24px}
-  .welcome-center .icon{font-size:48px;margin-bottom:8px}
-  .welcome-center h2{font-size:22px;font-weight:700;color:#1e293b;margin-bottom:16px}
-  .welcome-center p{color:#475569;font-size:15px;line-height:1.7;max-width:480px;margin:0 auto 16px}
-  .welcome-center .small{color:#78716c;font-size:13px;line-height:1.6;max-width:440px;margin:0 auto}
-  .hidden{display:none}
+  :root {
+    --navy-950: #020617;
+    --navy-900: #0F172A;
+    --navy-800: #1E293B;
+    --navy-700: #334155;
+    --navy-600: #475569;
+    --gold-600: #D97706;
+    --gold-500: #F59E0B;
+    --gold-400: #FBBF24;
+    --gold-300: #FCD34D;
+    --slate-300: #CBD5E1;
+    --slate-400: #94A3B8;
+    --slate-500: #64748B;
+    --success: #22C55E;
+    --error: #EF4444;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Open Sans', system-ui, sans-serif;
+    min-height: 100vh;
+    background: var(--navy-950);
+    color: #fff;
+    font-size: 18px;
+    line-height: 1.6;
+  }
+
+  /* Background Effects */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background:
+      radial-gradient(ellipse 600px 400px at 20% 20%, rgba(245,158,11,0.06) 0%, transparent 70%),
+      radial-gradient(ellipse 500px 500px at 80% 80%, rgba(245,158,11,0.04) 0%, transparent 70%),
+      radial-gradient(ellipse 300px 300px at 60% 30%, rgba(59,130,246,0.03) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(rgba(245,158,11,0.08) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .progress-bar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(15,23,42,0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(245,158,11,0.15);
+    padding: 14px 20px;
+  }
+  .progress-inner {
+    max-width: 640px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .progress-track {
+    flex: 1;
+    height: 5px;
+    background: var(--navy-700);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold-500), var(--gold-300));
+    border-radius: 99px;
+    transition: width .5s cubic-bezier(.4,0,.2,1);
+    box-shadow: 0 0 12px rgba(245,158,11,0.4);
+  }
+  .progress-text {
+    color: var(--slate-400);
+    font-size: 13px;
+    font-weight: 600;
+    min-width: 64px;
+    text-align: right;
+    font-family: 'Montserrat', sans-serif;
+  }
+
+  .header {
+    text-align: center;
+    padding: 40px 20px 0;
+    position: relative;
+    z-index: 1;
+  }
+  .header h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--gold-500);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    animation: goldPulse 3s ease-in-out infinite;
+  }
+  .header p {
+    font-size: 20px;
+    color: var(--slate-300);
+    margin-top: 4px;
+    font-weight: 300;
+  }
+
+  .card-wrap {
+    max-width: 640px;
+    margin: 24px auto 48px;
+    padding: 0 16px;
+    position: relative;
+    z-index: 1;
+  }
+  .card {
+    background: rgba(30,41,59,0.80);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+    padding: 36px 32px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 0 40px rgba(245,158,11,0.04);
+    animation: cardIn 0.4s ease-out;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+  .tab {
+    padding: 5px 12px;
+    border-radius: 99px;
+    border: none;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .2s ease;
+    font-family: 'Montserrat', sans-serif;
+    letter-spacing: 0.3px;
+  }
+  .tab.active {
+    background: var(--gold-500);
+    color: var(--navy-900);
+    box-shadow: 0 0 12px rgba(245,158,11,0.3);
+  }
+  .tab.done {
+    background: rgba(245,158,11,0.15);
+    color: var(--gold-400);
+    border: 1px solid rgba(245,158,11,0.2);
+  }
+  .tab.future {
+    background: transparent;
+    color: var(--navy-600);
+    cursor: default;
+  }
+
+  h2.section-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+  p.section-sub {
+    color: var(--slate-400);
+    font-size: 15px;
+    margin-bottom: 24px;
+  }
+
+  .field { margin-bottom: 28px; }
+  .field-label {
+    display: block;
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--slate-300);
+    margin-bottom: 10px;
+    font-family: 'Montserrat', sans-serif;
+  }
+  .field-hint {
+    font-size: 13px;
+    color: var(--slate-500);
+    margin: -6px 0 10px;
+  }
+
+  input[type=text], input[type=email], input[type=tel], select, textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid var(--navy-600);
+    border-radius: 12px;
+    font-size: 16px;
+    outline: none;
+    background: var(--navy-900);
+    color: #fff;
+    font-family: 'Open Sans', sans-serif;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  input::placeholder, textarea::placeholder { color: var(--slate-500); }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--gold-500);
+    box-shadow: 0 0 0 3px rgba(245,158,11,0.12);
+  }
+  textarea { resize: vertical; min-height: 80px; }
+  select { cursor: pointer; color: #fff; appearance: auto; }
+  select option { background: var(--navy-900); color: #fff; }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  @media(max-width:520px) { .grid2, .grid3 { grid-template-columns: 1fr; } }
+
+  .opt {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1.5px solid var(--navy-600);
+    cursor: pointer;
+    transition: all .2s ease;
+    font-size: 15px;
+    background: rgba(15,23,42,0.6);
+    user-select: none;
+    color: var(--slate-300);
+    min-height: 48px;
+  }
+  .opt:hover {
+    background: rgba(245,158,11,0.06);
+    border-color: rgba(245,158,11,0.3);
+  }
+  .opt.selected {
+    background: rgba(245,158,11,0.1);
+    border-color: var(--gold-500);
+    color: #fff;
+  }
+  .opt .indicator {
+    width: 22px; height: 22px;
+    border-radius: 5px;
+    border: 2px solid var(--navy-600);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .2s;
+    flex-shrink: 0;
+  }
+  .opt.selected .indicator {
+    border-color: var(--gold-500);
+    background: var(--gold-500);
+  }
+  .opt .indicator.radio { border-radius: 50%; }
+  .opt.selected .indicator.radio {
+    background: transparent;
+    border-color: var(--gold-500);
+    border-width: 3px;
+  }
+  .opt.selected .indicator.radio::after {
+    content: '';
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--gold-500);
+  }
+  .check-mark { color: var(--navy-900); font-size: 13px; font-weight: 700; }
+
+  .stars { display: flex; align-items: center; gap: 4px; }
+  .stars span { font-size: 13px; color: var(--slate-500); min-width: 55px; }
+  .stars span:last-child { text-align: right; }
+  .star {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 30px;
+    padding: 0 3px;
+    transition: all .15s;
+    min-width: 48px;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .star.filled { color: var(--gold-500); text-shadow: 0 0 10px rgba(245,158,11,0.4); }
+  .star.empty { color: var(--navy-600); }
+  .star:hover { transform: scale(1.15); }
+
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .btn {
+    padding: 12px 28px;
+    border: none;
+    border-radius: 99px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 15px;
+    font-family: 'Montserrat', sans-serif;
+    transition: all .2s ease;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-back {
+    background: rgba(255,255,255,0.04);
+    color: var(--slate-400);
+    border: 1px solid rgba(255,255,255,0.1);
+    backdrop-filter: blur(8px);
+  }
+  .btn-back:hover { background: rgba(255,255,255,0.08); color: #fff; }
+  .btn-next {
+    background: var(--gold-500);
+    color: var(--navy-900);
+    box-shadow: 0 0 20px rgba(245,158,11,0.3);
+  }
+  .btn-next:hover {
+    background: var(--gold-400);
+    box-shadow: 0 0 30px rgba(245,158,11,0.5);
+    transform: translateY(-1px);
+  }
+  .btn-submit {
+    background: var(--success);
+    color: #fff;
+    padding: 14px 36px;
+    font-size: 16px;
+    font-weight: 800;
+    box-shadow: 0 0 20px rgba(34,197,94,0.3);
+  }
+  .btn-submit:hover {
+    box-shadow: 0 0 30px rgba(34,197,94,0.5);
+    transform: translateY(-1px);
+  }
+
+  .thank-you {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+    position: relative;
+    z-index: 1;
+  }
+  .thank-card {
+    background: rgba(30,41,59,0.85);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+    padding: 56px 40px;
+    max-width: 560px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+  .thank-card h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 16px;
+  }
+  .thank-card p {
+    color: var(--slate-300);
+    font-size: 16px;
+    line-height: 1.8;
+    margin: 0 0 16px;
+  }
+
+  .spinner {
+    display: inline-block;
+    width: 20px; height: 20px;
+    border: 3px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin .8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .error-msg {
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.3);
+    color: #fca5a5;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+
+  .welcome-center { text-align: center; margin-bottom: 24px; }
+  .welcome-center .icon {
+    font-size: 52px;
+    margin-bottom: 12px;
+    filter: drop-shadow(0 0 20px rgba(245,158,11,0.3));
+  }
+  .welcome-center h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 20px;
+  }
+  .welcome-center p {
+    color: var(--slate-300);
+    font-size: 16px;
+    line-height: 1.8;
+    max-width: 480px;
+    margin: 0 auto 16px;
+  }
+  .welcome-center .small {
+    color: var(--slate-500);
+    font-size: 14px;
+    line-height: 1.7;
+    max-width: 440px;
+    margin: 0 auto;
+  }
+
+  .hidden { display: none; }
+
+  @keyframes goldPulse {
+    0%, 100% { text-shadow: 0 0 20px rgba(245,158,11,0.2); }
+    50% { text-shadow: 0 0 40px rgba(245,158,11,0.35); }
+  }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 </style>
 </head>
 <body>
 
-<!-- ═══════════ CONFIGURATION ═══════════ -->
 <script>
-// ⚠️ PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE
+// PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE
 const GOOGLE_SCRIPT_URL = "YOUR_GOOGLE_SCRIPT_URL_HERE";
 </script>
 
@@ -105,6 +605,11 @@ let formData = {
 let submitting = false;
 let error = "";
 
+/* FIX: Text inputs update data without re-rendering the DOM */
+function setInputVal(key, val) {
+  formData[key] = val;
+}
+
 function toggleArr(key, val) {
   const i = formData[key].indexOf(val);
   if (i > -1) formData[key].splice(i, 1);
@@ -125,26 +630,26 @@ function makeStars(key, leftLabel, rightLabel) {
   const v = formData[key];
   let h = `<div class="stars"><span>${leftLabel}</span>`;
   for (let i = 1; i <= 5; i++) {
-    h += `<button class="star ${i <= v ? 'filled' : 'empty'}" onclick="setVal('${key}',${i})">★</button>`;
+    h += `<button class="star ${i <= v ? 'filled' : 'empty'}" onclick="setVal('${key}',${i})" aria-label="Rate ${i} of 5">&#9733;</button>`;
   }
   h += `<span>${rightLabel}</span></div>`;
   return h;
 }
 
 function makeRadios(key, options, cols) {
-  let h = `<div class="${cols === 3 ? 'grid3' : cols === 2 ? 'grid2' : ''}" style="${cols === 1 ? 'display:flex;flex-direction:column;gap:8px' : ''}">`;
+  let h = `<div class="${cols === 3 ? 'grid3' : cols === 2 ? 'grid2' : ''}" style="${cols === 1 ? 'display:flex;flex-direction:column;gap:10px' : ''}">`;
   options.forEach(o => {
     const sel = formData[key] === o ? ' selected' : '';
-    h += `<div class="opt${sel}" onclick="setVal('${key}','${o.replace(/'/g, "\\'")}')"><div class="indicator radio">${formData[key] === o ? '' : ''}</div>${o}</div>`;
+    h += `<div class="opt${sel}" onclick="setVal('${key}','${o.replace(/'/g, "\\'")}')"><div class="indicator radio"></div>${o}</div>`;
   });
   return h + '</div>';
 }
 
 function makeChecks(key, options, cols) {
-  let h = `<div class="${cols === 2 ? 'grid2' : ''}" style="${cols === 1 ? 'display:flex;flex-direction:column;gap:8px' : ''}">`;
+  let h = `<div class="${cols === 2 ? 'grid2' : ''}" style="${cols === 1 ? 'display:flex;flex-direction:column;gap:10px' : ''}">`;
   options.forEach(o => {
     const sel = formData[key].includes(o) ? ' selected' : '';
-    h += `<div class="opt${sel}" onclick="toggleArr('${key}','${o.replace(/'/g, "\\'")}')"><div class="indicator">${formData[key].includes(o) ? '<span class=check-mark>✓</span>' : ''}</div>${o}</div>`;
+    h += `<div class="opt${sel}" onclick="toggleArr('${key}','${o.replace(/'/g, "\\'")}')"><div class="indicator">${formData[key].includes(o) ? '<span class=check-mark>&#10003;</span>' : ''}</div>${o}</div>`;
   });
   return h + '</div>';
 }
@@ -154,7 +659,7 @@ function field(label, hint, content) {
 }
 
 function input(key, placeholder, type) {
-  return `<input type="${type||'text'}" value="${formData[key]}" placeholder="${placeholder}" oninput="setVal('${key}',this.value)" />`;
+  return `<input type="${type||'text'}" value="${formData[key]}" placeholder="${placeholder}" oninput="setInputVal('${key}',this.value)" />`;
 }
 
 function select(key, options, placeholder) {
@@ -164,20 +669,20 @@ function select(key, options, placeholder) {
 }
 
 function textarea(key, placeholder) {
-  return `<textarea placeholder="${placeholder}" oninput="setVal('${key}',this.value)">${formData[key]}</textarea>`;
+  return `<textarea placeholder="${placeholder}" oninput="setInputVal('${key}',this.value)">${formData[key]}</textarea>`;
 }
 
 function sectionHTML(idx) {
   switch(idx) {
     case 0: return `
       <div class="welcome-center">
-        <div class="icon">🧭</div>
+        <div class="icon">&#129517;</div>
         <h2>Your Wellness Journey Check-In</h2>
-        <p>Building lasting health is like building a house — you need more than just one tool. This quick check-in helps us see which tools you've been using and where there might be opportunities to <strong>accelerate your results</strong>.</p>
-        <p class="small">It only takes about 2 minutes. There are no wrong answers — this is 100% about understanding <em>your</em> experience so I can support you in the way that works best for you.</p>
+        <p>Building lasting health is like building a house &mdash; you need more than just one tool. This quick check-in helps us see which tools you've been using and where there might be opportunities to <strong style="color:var(--gold-400)">accelerate your results</strong>.</p>
+        <p class="small">It only takes about 2 minutes. There are no wrong answers &mdash; this is 100% about understanding <em>your</em> experience so I can support you in the way that works best for you.</p>
       </div>`;
     case 1: return `
-      <h2 class="section-title">👋 About You</h2>
+      <h2 class="section-title">&#128075; About You</h2>
       <p class="section-sub">Let's start with the basics.</p>
       <div class="grid2">
         ${field("First Name","",input("firstName","First name"))}
@@ -187,39 +692,39 @@ function sectionHTML(idx) {
       ${field("Phone Number","",input("phone","(555) 123-4567","tel"))}
       ${field("How do you prefer to communicate?","",makeRadios("preferredContact",["Text","Email","Phone Call","Zoom"],2))}`;
     case 2: return `
-      <h2 class="section-title">🧭 Your Journey So Far</h2>
+      <h2 class="section-title">&#129517; Your Journey So Far</h2>
       <p class="section-sub">Help me understand where you've been.</p>
-      ${field("How long have you been on your health & wellness journey?","",select("journeyLength",["Less than 3 months","3–6 months","6–12 months","1–2 years","2+ years"]))}
+      ${field("How long have you been on your health & wellness journey?","",select("journeyLength",["Less than 3 months","3\u20136 months","6\u201312 months","1\u20132 years","2+ years"]))}
       ${field("What originally motivated you to start?","Select all that apply",makeChecks("motivation",["Weight loss","More energy","Better confidence","Health condition","Doctor's recommendation","Family / loved ones","Feel better overall","Other"],2))}
       ${field("Where are you relative to your original goals?","",select("goalProgress",["Reached my goal","75%+ of the way there","About halfway","Just getting started","I've stalled or gone backward"]))}
       ${field("What's been your biggest win so far?","Even small wins count!",textarea("biggestWin","Share something you're proud of on your journey..."))}`;
     case 3: return `
-      <h2 class="section-title">🤝 Your Coaching Experience</h2>
+      <h2 class="section-title">&#129309; Your Coaching Experience</h2>
       <p class="section-sub">Tell me about the support you've received.</p>
       ${field("How often did you connect with your previous coach?","",makeRadios("coachFrequency",["Weekly","Every 2 weeks","Monthly","Rarely or never"],2))}
       ${field("How supported did you feel by your coach?","",makeStars("coachSupport","Not at all","Very"))}
       ${field("What did your coaching sessions typically focus on?","Select all that apply",makeChecks("coachFocus",["Meal planning","Accountability check-ins","Goal setting","Mindset & motivation","Habits of Health","We didn't really have sessions"],2))}
       ${field("What does great coaching look like to you?","What would help you most going forward?",textarea("coachFeedback","Tell me what kind of support works best for you..."))}`;
     case 4: return `
-      <h2 class="section-title">📚 Habits of Health</h2>
+      <h2 class="section-title">&#128218; Habits of Health</h2>
       <p class="section-sub">The Habits of Health system is one of the most powerful tools available to you.</p>
-      ${field("How familiar are you with the Habits of Health system?","",makeRadios("hohFamiliarity",["Not at all — what is it?","I've heard of it but haven't explored it","Somewhat familiar — I know the basics","I use parts of it regularly","It's woven into my daily life"],1))}
+      ${field("How familiar are you with the Habits of Health system?","",makeRadios("hohFamiliarity",["Not at all \u2014 what is it?","I've heard of it but haven't explored it","Somewhat familiar \u2014 I know the basics","I use parts of it regularly","It's woven into my daily life"],1))}
       ${field("Which Habits of Health areas have you explored?","Select all that apply",makeChecks("hohAreas",["Healthy sleep","Hydration","Motion & movement","Healthy mind & mindset","Stress management","Healthy surroundings","None of the above"],2))}`;
     case 5: return `
-      <h2 class="section-title">👥 Community</h2>
+      <h2 class="section-title">&#128101; Community</h2>
       <p class="section-sub">Connection and community are a huge part of long-term success.</p>
       ${field("How connected do you feel to the wellness community?","",makeStars("communityEngagement","Not at all","Very"))}
       ${field("Which community resources have you participated in?","Select all that apply",makeChecks("communityActivities",["WIN Calls","Facebook Group","Webinars","Local meetups / events","1-on-1 support beyond coaching","None of the above"],1))}
-      ${field("Would you like to be more connected to the community?","",makeRadios("wantMoreCommunity",["Yes, definitely!","Maybe — tell me more","I'm good for now"],3))}`;
+      ${field("Would you like to be more connected to the community?","",makeRadios("wantMoreCommunity",["Yes, definitely!","Maybe \u2014 tell me more","I'm good for now"],3))}`;
     case 6: return `
-      <h2 class="section-title">🥗 Nutrition & Physical Health</h2>
+      <h2 class="section-title">&#129367; Nutrition & Physical Health</h2>
       <p class="section-sub">Let's check in on where you are with your physical health goals.</p>
       ${field("Where are you with your healthy weight goals?","",select("healthyWeight",["Still in process","Got to goal and maintaining within 10 lbs","Got to goal but now gaining back","Struggling","I never set a specific weight goal"]))}
       ${field("How confident do you feel about your daily nutrition plan?","",makeStars("nutritionConfidence","Not at all","Very"))}`;
     case 7: return `
-      <h2 class="section-title">🚀 Looking Forward</h2>
+      <h2 class="section-title">&#128640; Looking Forward</h2>
       <p class="section-sub">This is the most important part. Let's talk about where you want to go.</p>
-      ${field("What's your #1 health goal for the next 90 days?","",textarea("ninetyDayGoal","Be specific — what does success look like for you?"))}
+      ${field("What's your #1 health goal for the next 90 days?","",textarea("ninetyDayGoal","Be specific \u2014 what does success look like for you?"))}
       ${field("What's been your biggest obstacle?","",textarea("biggestObstacle","What's gotten in the way of your progress?"))}
       ${field("How ready are you to re-engage with your health journey?","",makeStars("reEngageReady","Not ready","Let's go!"))}
       ${field("What would make the biggest difference right now?","Select all that apply",makeChecks("biggestDifference",["More consistent coaching","Better understanding of Habits of Health","Community & support system","A clear, step-by-step plan","Accountability","Help with motivation & mindset"],2))}`;
@@ -230,7 +735,7 @@ async function submitForm() {
   if (submitting) return;
   submitting = true; error = "";
   render();
-  
+
   const payload = {
     ...formData,
     motivation: formData.motivation.join("; "),
@@ -269,18 +774,18 @@ function renderThankYou() {
   document.getElementById("app").innerHTML = `
     <div class="thank-you">
       <div class="thank-card">
-        <div style="font-size:56px;margin-bottom:16px">🎉</div>
+        <div style="font-size:56px;margin-bottom:20px">&#127881;</div>
         <h1>Thank You, ${formData.firstName || "friend"}!</h1>
         <p>I really appreciate you taking the time to share where you are on your journey. I'll review your responses and reach out personally to chat about how we can work together to help you reach your goals.</p>
-        <p>Building lasting health is like building a house — and now we can make sure you have <strong>every tool in the toolbox</strong>. Talk soon!</p>
-        <p style="color:#92400e;font-weight:600;font-size:14px;margin-top:24px">— Craig</p>
+        <p>Building lasting health is like building a house &mdash; and now we can make sure you have <strong style="color:var(--gold-400)">every tool in the toolbox</strong>. Talk soon!</p>
+        <p style="color:var(--gold-500);font-weight:600;font-size:15px;margin-top:28px;font-family:'Montserrat',sans-serif">&mdash; Craig</p>
       </div>
     </div>`;
 }
 
 function render() {
   const progress = (currentSection / (SECTIONS.length - 1)) * 100;
-  
+
   let tabs = '';
   SECTIONS.forEach((s, i) => {
     const cls = i === currentSection ? 'active' : i < currentSection ? 'done' : 'future';
@@ -298,16 +803,16 @@ function render() {
       </div>
     </div>
     ${isFirst ? '<div class="header"><h1>Client Experience</h1><p>Check-In</p></div>' : ''}
-    <div class="card-wrap" style="margin-top:${isFirst ? '20px' : '0'}">
+    <div class="card-wrap" style="margin-top:${isFirst ? '24px' : '0'}">
       <div class="card">
         <div class="tabs">${tabs}</div>
         ${error ? `<div class="error-msg">${error}</div>` : ''}
         ${sectionHTML(currentSection)}
         <div class="nav">
-          ${currentSection > 0 ? '<button class="btn btn-back" onclick="goTo(currentSection-1)">← Back</button>' : '<div></div>'}
-          ${isLast 
-            ? `<button class="btn btn-submit" onclick="submitForm()" ${submitting?'disabled':''}>${submitting ? '<span class="spinner"></span> Submitting...' : 'Submit Check-In ✓'}</button>`
-            : '<button class="btn btn-next" onclick="goTo(currentSection+1)">Continue →</button>'
+          ${currentSection > 0 ? '<button class="btn btn-back" onclick="goTo(currentSection-1)">&larr; Back</button>' : '<div></div>'}
+          ${isLast
+            ? `<button class="btn btn-submit" onclick="submitForm()" ${submitting?'disabled':''}>${submitting ? '<span class="spinner"></span> Submitting...' : 'Submit Check-In &#10003;'}</button>`
+            : '<button class="btn btn-next" onclick="goTo(currentSection+1)">Continue &rarr;</button>'
           }
         </div>
       </div>
@@ -318,3 +823,6 @@ render();
 </script>
 </body>
 </html>
+
+
+
