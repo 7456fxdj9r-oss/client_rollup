@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wellness Journey Check-In</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;min-height:100vh;background:linear-gradient(180deg,#f97316 0%,#ea580c 100%)}
+  .progress-bar{position:sticky;top:0;z-index:10;background:rgba(234,88,12,.95);backdrop-filter:blur(8px);padding:12px 20px}
+  .progress-inner{max-width:600px;margin:0 auto;display:flex;align-items:center;gap:12px}
+  .progress-track{flex:1;height:6px;background:rgba(255,255,255,.2);border-radius:99px;overflow:hidden}
+  .progress-fill{height:100%;background:#fff;border-radius:99px;transition:width .4s ease}
+  .progress-text{color:rgba(255,255,255,.8);font-size:12px;font-weight:600;min-width:60px;text-align:right}
+  .header{text-align:center;padding:32px 20px 0}
+  .header h1{font-size:28px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:2px;text-shadow:0 2px 12px rgba(0,0,0,.15)}
+  .header p{font-size:20px;color:rgba(255,255,255,.85);margin-top:4px;font-weight:300}
+  .card-wrap{max-width:600px;margin:20px auto 40px;padding:0 16px}
+  .card{background:#fefce8;border-radius:16px;padding:32px 28px;box-shadow:0 20px 60px rgba(0,0,0,.1)}
+  .tabs{display:flex;gap:4px;margin-bottom:24px;flex-wrap:wrap}
+  .tab{padding:4px 10px;border-radius:6px;border:none;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s}
+  .tab.active{background:#f59e0b;color:#fff}
+  .tab.done{background:#fef3c7;color:#92400e}
+  .tab.future{background:transparent;color:#d1d5db;cursor:default}
+  h2.section-title{font-size:18px;font-weight:700;color:#1e293b;margin-bottom:4px}
+  p.section-sub{color:#78716c;font-size:13px;margin-bottom:20px}
+  .field{margin-bottom:24px}
+  .field-label{display:block;font-weight:600;font-size:14px;color:#1e293b;margin-bottom:8px}
+  .field-hint{font-size:12px;color:#94a3b8;margin:-4px 0 8px}
+  input[type=text],input[type=email],input[type=tel],select,textarea{width:100%;padding:10px 14px;border:1.5px solid #e5e5e5;border-radius:8px;font-size:14px;outline:none;background:#fafaf9;font-family:inherit;transition:border .15s}
+  input:focus,select:focus,textarea:focus{border-color:#f59e0b}
+  textarea{resize:vertical;min-height:72px}
+  select{cursor:pointer;color:#1e293b;appearance:auto}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+  @media(max-width:480px){.grid2,.grid3{grid-template-columns:1fr}}
+  .opt{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;border:1.5px solid #e5e5e5;cursor:pointer;transition:all .15s;font-size:14px;background:#fafaf9;user-select:none}
+  .opt:hover{background:#fffbeb}
+  .opt.selected{background:#fef3c7;border-color:#f59e0b}
+  .opt .indicator{width:20px;height:20px;border-radius:4px;border:2px solid #d1d5db;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+  .opt.selected .indicator{border-color:#f59e0b;background:#f59e0b}
+  .opt .indicator.radio{border-radius:50%}
+  .opt.selected .indicator.radio{background:#fff;border-color:#f59e0b}
+  .opt.selected .indicator.radio::after{content:'';width:10px;height:10px;border-radius:50%;background:#f59e0b}
+  .check-mark{color:#fff;font-size:13px;font-weight:700}
+  .stars{display:flex;align-items:center;gap:4px}
+  .stars span{font-size:12px;color:#9ca3af;min-width:50px}
+  .stars span:last-child{text-align:right}
+  .star{background:none;border:none;cursor:pointer;font-size:28px;padding:0 2px;transition:color .15s}
+  .star.filled{color:#f59e0b}
+  .star.empty{color:#d1d5db}
+  .nav{display:flex;justify-content:space-between;margin-top:28px;padding-top:20px;border-top:1px solid #f5f0e1}
+  .btn{padding:10px 24px;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:14px;transition:all .15s}
+  .btn-back{background:#f5f5f4;color:#78716c}
+  .btn-next{background:#f59e0b;color:#fff;box-shadow:0 2px 8px rgba(245,158,11,.3)}
+  .btn-submit{background:#16a34a;color:#fff;padding:12px 32px;font-size:15px;font-weight:700;box-shadow:0 2px 8px rgba(22,163,74,.3)}
+  .btn:hover{opacity:.9;transform:translateY(-1px)}
+  .thank-you{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+  .thank-card{background:#fefce8;border-radius:16px;padding:48px 36px;max-width:540px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.15)}
+  .thank-card h1{font-size:24px;font-weight:700;color:#1e293b;margin:0 0 12px}
+  .thank-card p{color:#475569;font-size:15px;line-height:1.7;margin:0 0 16px}
+  .spinner{display:inline-block;width:20px;height:20px;border:3px solid rgba(255,255,255,.3);border-radius:50%;border-top-color:#fff;animation:spin .8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .error-msg{background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:12px 16px;border-radius:8px;font-size:13px;margin-bottom:16px}
+  .welcome-center{text-align:center;margin-bottom:24px}
+  .welcome-center .icon{font-size:48px;margin-bottom:8px}
+  .welcome-center h2{font-size:22px;font-weight:700;color:#1e293b;margin-bottom:16px}
+  .welcome-center p{color:#475569;font-size:15px;line-height:1.7;max-width:480px;margin:0 auto 16px}
+  .welcome-center .small{color:#78716c;font-size:13px;line-height:1.6;max-width:440px;margin:0 auto}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ CONFIGURATION ═══════════ -->
+<script>
+// ⚠️ PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE
+const GOOGLE_SCRIPT_URL = "YOUR_GOOGLE_SCRIPT_URL_HERE";
+</script>
+
+<div id="app"></div>
+
+<script>
+const SECTIONS = [
+  { id:"welcome", label:"Welcome" },
+  { id:"about", label:"About You" },
+  { id:"journey", label:"Your Journey" },
+  { id:"coaching", label:"Coaching" },
+  { id:"habits", label:"Habits of Health" },
+  { id:"community", label:"Community" },
+  { id:"nutrition", label:"Nutrition" },
+  { id:"forward", label:"Looking Forward" }
+];
+
+let currentSection = 0;
+let formData = {
+  firstName:"", lastName:"", email:"", phone:"", preferredContact:"",
+  journeyLength:"", motivation:[], goalProgress:"", biggestWin:"",
+  coachFrequency:"", coachSupport:0, coachFocus:[], coachFeedback:"",
+  hohFamiliarity:"", hohAreas:[],
+  communityEngagement:0, communityActivities:[], wantMoreCommunity:"",
+  healthyWeight:"", nutritionConfidence:0,
+  ninetyDayGoal:"", biggestObstacle:"", reEngageReady:0, biggestDifference:[]
+};
+let submitting = false;
+let error = "";
+
+function toggleArr(key, val) {
+  const i = formData[key].indexOf(val);
+  if (i > -1) formData[key].splice(i, 1);
+  else formData[key].push(val);
+  render();
+}
+
+function setVal(key, val) { formData[key] = val; render(); }
+
+function goTo(idx) {
+  if (idx < 0 || idx >= SECTIONS.length) return;
+  currentSection = idx;
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function makeStars(key, leftLabel, rightLabel) {
+  const v = formData[key];
+  let h = `<div class="stars"><span>${leftLabel}</span>`;
+  for (let i = 1; i <= 5; i++) {
+    h += `<button class="star ${i <= v ? 'filled' : 'empty'}" onclick="setVal('${key}',${i})">★</button>`;
+  }
+  h += `<span>${rightLabel}</span></div>`;
+  return h;
+}
+
+function makeRadios(key, options, cols) {
+  let h = `<div class="${cols === 3 ? 'grid3' : cols === 2 ? 'grid2' : ''}" style="${cols === 1 ? 'display:flex;flex-direction:column;gap:8px' : ''}">`;
+  options.forEach(o => {
+    const sel = formData[key] === o ? ' selected' : '';
+    h += `<div class="opt${sel}" onclick="setVal('${key}','${o.replace(/'/g, "\\'")}')"><div class="indicator radio">${formData[key] === o ? '' : ''}</div>${o}</div>`;
+  });
+  return h + '</div>';
+}
+
+function makeChecks(key, options, cols) {
+  let h = `<div class="${cols === 2 ? 'grid2' : ''}" style="${cols === 1 ? 'display:flex;flex-direction:column;gap:8px' : ''}">`;
+  options.forEach(o => {
+    const sel = formData[key].includes(o) ? ' selected' : '';
+    h += `<div class="opt${sel}" onclick="toggleArr('${key}','${o.replace(/'/g, "\\'")}')"><div class="indicator">${formData[key].includes(o) ? '<span class=check-mark>✓</span>' : ''}</div>${o}</div>`;
+  });
+  return h + '</div>';
+}
+
+function field(label, hint, content) {
+  return `<div class="field"><label class="field-label">${label}</label>${hint ? `<p class="field-hint">${hint}</p>` : ''}${content}</div>`;
+}
+
+function input(key, placeholder, type) {
+  return `<input type="${type||'text'}" value="${formData[key]}" placeholder="${placeholder}" oninput="setVal('${key}',this.value)" />`;
+}
+
+function select(key, options, placeholder) {
+  let h = `<select onchange="setVal('${key}',this.value)"><option value="">${placeholder || 'Please select...'}</option>`;
+  options.forEach(o => { h += `<option value="${o}" ${formData[key]===o?'selected':''}>${o}</option>`; });
+  return h + '</select>';
+}
+
+function textarea(key, placeholder) {
+  return `<textarea placeholder="${placeholder}" oninput="setVal('${key}',this.value)">${formData[key]}</textarea>`;
+}
+
+function sectionHTML(idx) {
+  switch(idx) {
+    case 0: return `
+      <div class="welcome-center">
+        <div class="icon">🧭</div>
+        <h2>Your Wellness Journey Check-In</h2>
+        <p>Building lasting health is like building a house — you need more than just one tool. This quick check-in helps us see which tools you've been using and where there might be opportunities to <strong>accelerate your results</strong>.</p>
+        <p class="small">It only takes about 2 minutes. There are no wrong answers — this is 100% about understanding <em>your</em> experience so I can support you in the way that works best for you.</p>
+      </div>`;
+    case 1: return `
+      <h2 class="section-title">👋 About You</h2>
+      <p class="section-sub">Let's start with the basics.</p>
+      <div class="grid2">
+        ${field("First Name","",input("firstName","First name"))}
+        ${field("Last Name","",input("lastName","Last name"))}
+      </div>
+      ${field("Email","",input("email","your@email.com","email"))}
+      ${field("Phone Number","",input("phone","(555) 123-4567","tel"))}
+      ${field("How do you prefer to communicate?","",makeRadios("preferredContact",["Text","Email","Phone Call","Zoom"],2))}`;
+    case 2: return `
+      <h2 class="section-title">🧭 Your Journey So Far</h2>
+      <p class="section-sub">Help me understand where you've been.</p>
+      ${field("How long have you been on your health & wellness journey?","",select("journeyLength",["Less than 3 months","3–6 months","6–12 months","1–2 years","2+ years"]))}
+      ${field("What originally motivated you to start?","Select all that apply",makeChecks("motivation",["Weight loss","More energy","Better confidence","Health condition","Doctor's recommendation","Family / loved ones","Feel better overall","Other"],2))}
+      ${field("Where are you relative to your original goals?","",select("goalProgress",["Reached my goal","75%+ of the way there","About halfway","Just getting started","I've stalled or gone backward"]))}
+      ${field("What's been your biggest win so far?","Even small wins count!",textarea("biggestWin","Share something you're proud of on your journey..."))}`;
+    case 3: return `
+      <h2 class="section-title">🤝 Your Coaching Experience</h2>
+      <p class="section-sub">Tell me about the support you've received.</p>
+      ${field("How often did you connect with your previous coach?","",makeRadios("coachFrequency",["Weekly","Every 2 weeks","Monthly","Rarely or never"],2))}
+      ${field("How supported did you feel by your coach?","",makeStars("coachSupport","Not at all","Very"))}
+      ${field("What did your coaching sessions typically focus on?","Select all that apply",makeChecks("coachFocus",["Meal planning","Accountability check-ins","Goal setting","Mindset & motivation","Habits of Health","We didn't really have sessions"],2))}
+      ${field("What does great coaching look like to you?","What would help you most going forward?",textarea("coachFeedback","Tell me what kind of support works best for you..."))}`;
+    case 4: return `
+      <h2 class="section-title">📚 Habits of Health</h2>
+      <p class="section-sub">The Habits of Health system is one of the most powerful tools available to you.</p>
+      ${field("How familiar are you with the Habits of Health system?","",makeRadios("hohFamiliarity",["Not at all — what is it?","I've heard of it but haven't explored it","Somewhat familiar — I know the basics","I use parts of it regularly","It's woven into my daily life"],1))}
+      ${field("Which Habits of Health areas have you explored?","Select all that apply",makeChecks("hohAreas",["Healthy sleep","Hydration","Motion & movement","Healthy mind & mindset","Stress management","Healthy surroundings","None of the above"],2))}`;
+    case 5: return `
+      <h2 class="section-title">👥 Community</h2>
+      <p class="section-sub">Connection and community are a huge part of long-term success.</p>
+      ${field("How connected do you feel to the wellness community?","",makeStars("communityEngagement","Not at all","Very"))}
+      ${field("Which community resources have you participated in?","Select all that apply",makeChecks("communityActivities",["WIN Calls","Facebook Group","Webinars","Local meetups / events","1-on-1 support beyond coaching","None of the above"],1))}
+      ${field("Would you like to be more connected to the community?","",makeRadios("wantMoreCommunity",["Yes, definitely!","Maybe — tell me more","I'm good for now"],3))}`;
+    case 6: return `
+      <h2 class="section-title">🥗 Nutrition & Physical Health</h2>
+      <p class="section-sub">Let's check in on where you are with your physical health goals.</p>
+      ${field("Where are you with your healthy weight goals?","",select("healthyWeight",["Still in process","Got to goal and maintaining within 10 lbs","Got to goal but now gaining back","Struggling","I never set a specific weight goal"]))}
+      ${field("How confident do you feel about your daily nutrition plan?","",makeStars("nutritionConfidence","Not at all","Very"))}`;
+    case 7: return `
+      <h2 class="section-title">🚀 Looking Forward</h2>
+      <p class="section-sub">This is the most important part. Let's talk about where you want to go.</p>
+      ${field("What's your #1 health goal for the next 90 days?","",textarea("ninetyDayGoal","Be specific — what does success look like for you?"))}
+      ${field("What's been your biggest obstacle?","",textarea("biggestObstacle","What's gotten in the way of your progress?"))}
+      ${field("How ready are you to re-engage with your health journey?","",makeStars("reEngageReady","Not ready","Let's go!"))}
+      ${field("What would make the biggest difference right now?","Select all that apply",makeChecks("biggestDifference",["More consistent coaching","Better understanding of Habits of Health","Community & support system","A clear, step-by-step plan","Accountability","Help with motivation & mindset"],2))}`;
+  }
+}
+
+async function submitForm() {
+  if (submitting) return;
+  submitting = true; error = "";
+  render();
+  
+  const payload = {
+    ...formData,
+    motivation: formData.motivation.join("; "),
+    coachFocus: formData.coachFocus.join("; "),
+    hohAreas: formData.hohAreas.join("; "),
+    communityActivities: formData.communityActivities.join("; "),
+    biggestDifference: formData.biggestDifference.join("; "),
+    submittedAt: new Date().toISOString(),
+    toolsActive: [
+      formData.coachFrequency && formData.coachFrequency !== "Rarely or never" ? 1 : 0,
+      formData.hohAreas.length > 0 && !formData.hohAreas.includes("None of the above") ? 1 : 0,
+      formData.communityActivities.length > 0 && !formData.communityActivities.includes("None of the above") ? 1 : 0,
+      formData.healthyWeight ? 1 : 0
+    ].reduce((a,b) => a+b, 0) + "/4"
+  };
+
+  try {
+    if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL !== "YOUR_GOOGLE_SCRIPT_URL_HERE") {
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+    }
+    submitting = false;
+    renderThankYou();
+  } catch (e) {
+    submitting = false;
+    error = "Something went wrong. Please try again or contact Craig directly.";
+    render();
+  }
+}
+
+function renderThankYou() {
+  document.getElementById("app").innerHTML = `
+    <div class="thank-you">
+      <div class="thank-card">
+        <div style="font-size:56px;margin-bottom:16px">🎉</div>
+        <h1>Thank You, ${formData.firstName || "friend"}!</h1>
+        <p>I really appreciate you taking the time to share where you are on your journey. I'll review your responses and reach out personally to chat about how we can work together to help you reach your goals.</p>
+        <p>Building lasting health is like building a house — and now we can make sure you have <strong>every tool in the toolbox</strong>. Talk soon!</p>
+        <p style="color:#92400e;font-weight:600;font-size:14px;margin-top:24px">— Craig</p>
+      </div>
+    </div>`;
+}
+
+function render() {
+  const progress = (currentSection / (SECTIONS.length - 1)) * 100;
+  
+  let tabs = '';
+  SECTIONS.forEach((s, i) => {
+    const cls = i === currentSection ? 'active' : i < currentSection ? 'done' : 'future';
+    tabs += `<button class="tab ${cls}" ${i <= currentSection ? `onclick="goTo(${i})"` : ''}>${s.label}</button>`;
+  });
+
+  const isFirst = currentSection === 0;
+  const isLast = currentSection === SECTIONS.length - 1;
+
+  document.getElementById("app").innerHTML = `
+    <div class="progress-bar">
+      <div class="progress-inner">
+        <div class="progress-track"><div class="progress-fill" style="width:${progress}%"></div></div>
+        <span class="progress-text">${currentSection + 1} of ${SECTIONS.length}</span>
+      </div>
+    </div>
+    ${isFirst ? '<div class="header"><h1>Client Experience</h1><p>Check-In</p></div>' : ''}
+    <div class="card-wrap" style="margin-top:${isFirst ? '20px' : '0'}">
+      <div class="card">
+        <div class="tabs">${tabs}</div>
+        ${error ? `<div class="error-msg">${error}</div>` : ''}
+        ${sectionHTML(currentSection)}
+        <div class="nav">
+          ${currentSection > 0 ? '<button class="btn btn-back" onclick="goTo(currentSection-1)">← Back</button>' : '<div></div>'}
+          ${isLast 
+            ? `<button class="btn btn-submit" onclick="submitForm()" ${submitting?'disabled':''}>${submitting ? '<span class="spinner"></span> Submitting...' : 'Submit Check-In ✓'}</button>`
+            : '<button class="btn btn-next" onclick="goTo(currentSection+1)">Continue →</button>'
+          }
+        </div>
+      </div>
+    </div>`;
+}
+
+render();
+</script>
+</body>
+</html>
